@@ -1,6 +1,7 @@
 import { HiRefresh } from "react-icons/hi";
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useWalletStore } from '../../stores/walletStore';
+import { Link } from 'react-router-dom';
 
 interface HeaderProps {
   countdown?: number;
@@ -19,7 +20,7 @@ export function Header({ countdown, onRefresh, isLoading, showRefresh = false }:
     <header className="bg-white border-b-4 border-black">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 relative">
+          <Link to="/" className="flex items-center gap-3 relative hover:opacity-80 transition-opacity">
             {/* Burst decoration behind logo */}
             <div className="absolute -left-2 -top-1 opacity-10">
               <img
@@ -37,13 +38,8 @@ export function Header({ countdown, onRefresh, isLoading, showRefresh = false }:
               <span className="text-black">Polymarket Trader</span>{" "}
               <span className="text-orange-500">Rumble</span>
             </h1>
-          </div>
+          </Link>
           <div className="flex items-center gap-4">
-            {/* Debug: Show connection status */}
-            <div className="text-xs px-2 py-1 rounded bg-gray-100 border">
-              Store: {connected ? '✅' : '❌'}
-            </div>
-
             {/* Balance display */}
             {connected && (
               <div className="hidden md:flex flex-col items-end text-sm">
