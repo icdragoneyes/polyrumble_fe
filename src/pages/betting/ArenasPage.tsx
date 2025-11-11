@@ -8,6 +8,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import { api } from '../../services/api';
+import { Header } from '../../components/common/Header';
 import { PoolCard } from '../../components/betting/PoolCard';
 import { useWebSocket } from '../../hooks/useWebSocket';
 import { useWalletBalance } from '../../hooks/useWalletBalance';
@@ -122,6 +123,9 @@ export default function ArenasPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Header with wallet connection */}
+      <Header />
+
       {/* Mock Mode Banner */}
       {env.mockMode && (
         <div className="bg-yellow-500 text-black px-4 py-1.5 text-center font-bold text-sm">
@@ -161,7 +165,7 @@ export default function ArenasPage() {
                 Choose an arena and bet on which trader will outperform
               </p>
             </div>
-            {/* WebSocket Status, Wallet Balance, and Connect Button */}
+            {/* WebSocket Status */}
             <div className="flex items-center gap-1 md:gap-3">
               {/* WebSocket Status Indicator - Hide in mock mode */}
               {!env.mockMode && (
@@ -179,14 +183,6 @@ export default function ArenasPage() {
                     <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
                   </div>
                 </>
-              )}
-
-              {/* Wallet Balance Display */}
-              {connected && (
-                <div className="hidden md:flex flex-col items-end text-sm">
-                  <span className="text-gray-600 body-font text-xs">Wallet</span>
-                  <span className="font-bold text-green-600">Connected ({balance.toFixed(2)} SOL)</span>
-                </div>
               )}
             </div>
           </div>

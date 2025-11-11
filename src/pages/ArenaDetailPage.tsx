@@ -12,6 +12,7 @@ import { useWebSocket } from "../hooks/useWebSocket";
 import { useTraderData } from "../hooks/useTraderData";
 import { useAutoRefresh } from "../hooks/useAutoRefresh";
 import { useWalletBalance } from "../hooks/useWalletBalance";
+import { Header } from "../components/common/Header";
 import { StickyBottomPanel } from "../components/arena/StickyBottomPanel";
 import { CompactBettingPanel } from "../components/arena/CompactBettingPanel";
 import { PNLTabContent } from "../components/arena/PNLTabContent";
@@ -205,6 +206,9 @@ export default function ArenaDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Header with wallet connection */}
+      <Header />
+
       {/* Mock Mode Banner */}
       {env.mockMode && isMockArena && (
         <div className="bg-yellow-500 text-black px-4 py-1.5 text-center font-bold text-sm">
@@ -279,14 +283,6 @@ export default function ArenaDetailPage() {
                     <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
                   </div>
                 </>
-              )}
-
-              {/* Wallet Balance Display */}
-              {connected && (
-                <div className="hidden md:flex flex-col items-end text-sm">
-                  <span className="text-gray-600 body-font text-xs">Wallet</span>
-                  <span className="font-bold text-green-600">Connected ({balance.toFixed(2)} SOL)</span>
-                </div>
               )}
             </div>
           </div>
@@ -405,6 +401,7 @@ export default function ArenaDetailPage() {
           }
           showMobileBettingModal={showMobileBettingModal}
           onToggleMobileBetting={() => setShowMobileBettingModal(!showMobileBettingModal)}
+          connected={connected}
         />
       )}
     </div>

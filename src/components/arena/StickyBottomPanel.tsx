@@ -6,6 +6,7 @@ interface StickyBottomPanelProps {
   poolInfoSection: ReactNode;
   showMobileBettingModal: boolean;
   onToggleMobileBetting: () => void;
+  connected: boolean;
 }
 
 type TabType = 'pnl' | 'metrics' | 'positions';
@@ -16,6 +17,7 @@ export function StickyBottomPanel({
   poolInfoSection,
   showMobileBettingModal,
   onToggleMobileBetting,
+  connected,
 }: StickyBottomPanelProps) {
   const tabs = [
     { id: 'pnl' as TabType, label: 'PNL', icon: '📈' },
@@ -52,11 +54,15 @@ export function StickyBottomPanel({
           <div className="container mx-auto px-4 max-w-7xl py-2">
             <button
               onClick={onToggleMobileBetting}
-              className="w-full py-4 px-6 font-bold text-base bg-gradient-to-r from-green-600 to-green-500 text-white hover:from-green-700 hover:to-green-600 border-2 border-black rounded-lg shadow-brutal-sm transition-all duration-200 hover:shadow-none active:translate-x-1 active:translate-y-1"
+              className={`w-full py-4 px-6 font-bold text-base border-2 border-black rounded-lg shadow-brutal-sm transition-all duration-200 hover:shadow-none active:translate-x-1 active:translate-y-1 ${
+                connected
+                  ? 'bg-gradient-to-r from-green-600 to-green-500 text-white hover:from-green-700 hover:to-green-600'
+                  : 'bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:from-blue-700 hover:to-blue-600'
+              }`}
             >
               <div className="flex items-center justify-center gap-2">
-                <span className="text-2xl">💰</span>
-                <span className="text-lg">PLACE YOUR BET</span>
+                <span className="text-2xl">{connected ? '💰' : '🔗'}</span>
+                <span className="text-lg">{connected ? 'PLACE YOUR BET' : 'CONNECT WALLET'}</span>
               </div>
             </button>
           </div>
