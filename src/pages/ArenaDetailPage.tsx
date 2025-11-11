@@ -4,27 +4,25 @@
  * Shows side-by-side trader comparison with charts + betting pools
  */
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from '@tanstack/react-query';
 import { api } from "../services/api";
 import { useWebSocket } from "../hooks/useWebSocket";
 import { useTraderData } from "../hooks/useTraderData";
 import { useAutoRefresh } from "../hooks/useAutoRefresh";
-import { Chart } from "../components/Chart/Chart";
-import { TraderCard } from "../components/TraderCard/TraderCard";
-import { ROIBarChart } from "../components/comparison/ROIBarChart";
-import { BettingPanel } from "../components/betting/BettingPanel";
-import { ArenaStatus } from "../components/betting/ArenaStatus";
+import { StickyBottomPanel } from "../components/arena/StickyBottomPanel";
+import { CompactBettingPanel } from "../components/arena/CompactBettingPanel";
+import { PNLTabContent } from "../components/arena/PNLTabContent";
+import { MetricsTabContent } from "../components/arena/MetricsTabContent";
+import { PositionsTabContent } from "../components/arena/PositionsTabContent";
 import { ErrorDisplay } from "../components/common/ErrorDisplay";
 import { LoadingSpinner } from "../components/common/LoadingSpinner";
-import {
-  calculatePercentageGrowth,
-  mergeChartData,
-} from "../utils/calculations";
-import type { TraderData, ChartDataPoint } from "../types";
+import type { TraderData } from "../types";
 import { FiArrowLeft, FiCopy, FiCheck } from "react-icons/fi";
 import { FaXTwitter } from "react-icons/fa6";
+import { env } from "../config/env";
+import { isMockArenaId, getMockArenaById } from "../constants/mockData";
 
 export default function ArenaDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -41,11 +39,26 @@ export default function ArenaDetailPage() {
   const { fetchAllTraderData, loading } = useTraderData();
   const { isConnected, onPoolUpdated, onPoolStatusChanged } = useWebSocket();
 
-  // Fetch pool/arena data from backend
+  // Check if this is a mock arena
+  const isMockArena = id ? isMockArenaId(id) : false;
+
+  // Fetch pool/arena data from backend (or use mock data)
   const { data: poolResponse, isLoading: poolLoading, error: poolError } = useQuery({
     queryKey: ['pool', id],
     queryFn: async () => {
       if (!id) throw new Error('Pool ID is required');
+
+      // If mock mode and mock arena, return mock data
+      if (env.mockMode && isMockArena) {
+        const mockPool = getMockArenaById(id);
+        if (!mockPool) throw new Error('Mock arena not found');
+        return {
+          success: true,
+          data: mockPool,
+        };
+      }
+
+      // Otherwise fetch from API
       const response = await api.pools.get(id);
       return response.data;
     },
@@ -105,55 +118,6 @@ export default function ArenaDetailPage() {
     };
   }, [pool, onPoolUpdated, onPoolStatusChanged]);
 
-  // Calculate chart data
-  const chartData = useMemo((): ChartDataPoint[] => {
-    if (!trader1Data || !trader2Data) return [];
-
-    const trader1Growth = calculatePercentageGrowth(
-      trader1Data.pnlTimeSeries,
-      trader1Data.metrics.portfolioValue,
-    );
-
-    const trader2Growth = calculatePercentageGrowth(
-      trader2Data.pnlTimeSeries,
-      trader2Data.metrics.portfolioValue,
-    );
-
-    return mergeChartData(
-      trader1Growth,
-      trader2Growth,
-      trader1Data.pnlTimeSeries,
-      trader2Data.pnlTimeSeries,
-    );
-  }, [trader1Data, trader2Data]);
-
-  // Calculate timeframe-specific ROI
-  const timeframeROI = useMemo(() => {
-    if (!trader1Data || !trader2Data || chartData.length === 0) {
-      return {
-        trader1ROI: 0,
-        trader2ROI: 0,
-        trader1Percent: 0,
-        trader2Percent: 0,
-      };
-    }
-
-    const lastPoint = chartData[chartData.length - 1];
-    const trader1Percent = lastPoint.trader1Percent;
-    const trader2Percent = lastPoint.trader2Percent;
-
-    const trader1ROI =
-      (trader1Percent / 100) * trader1Data.metrics.portfolioValue;
-    const trader2ROI =
-      (trader2Percent / 100) * trader2Data.metrics.portfolioValue;
-
-    return {
-      trader1ROI,
-      trader2ROI,
-      trader1Percent,
-      trader2Percent,
-    };
-  }, [trader1Data, trader2Data, chartData]);
 
   // Auto-refresh trader data every 5 minutes
   useAutoRefresh(
@@ -227,7 +191,14 @@ export default function ArenaDetailPage() {
     trader2Data?.profile.profileImage;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-[500px]">
+      {/* Mock Mode Banner */}
+      {env.mockMode && isMockArena && (
+        <div className="bg-yellow-500 text-black px-2 py-1 text-center font-bold text-xs">
+          🧪 MOCK MODE - Sample arena with real Polymarket trader data. Betting is simulated.
+        </div>
+      )}
+
       {/* Realtime Notification */}
       {notification && (
         <div className="fixed top-4 right-4 z-50 animate-slide-in">
@@ -244,140 +215,124 @@ export default function ArenaDetailPage() {
         </div>
       )}
 
-      <main className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Header Section */}
-        <div className="mb-8">
-          <Link
-            to="/arenas"
-            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4 body-font font-medium"
-          >
-            <FiArrowLeft />
-            Back to Arenas
-          </Link>
+      <main className="container mx-auto px-4 py-2 max-w-7xl">
+        {/* Compact Header */}
+        <div className="flex items-center justify-between gap-3 mb-2">
+          <div className="flex items-center gap-3">
+            <Link
+              to="/arenas"
+              className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 body-font text-sm"
+            >
+              <FiArrowLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">Back</span>
+            </Link>
 
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold comic-font mb-2">
-                💥🥊 {traderAName} vs {traderBName}
-              </h1>
-              <p className="text-gray-600 body-font">
-                Pool #{pool.poolNumber} • {pool.timeframeDays}-day competition • Status: {pool.status}
-              </p>
-            </div>
+            <h1 className="text-lg md:text-xl font-bold comic-font leading-tight">
+              {traderAName} vs {traderBName}
+            </h1>
+          </div>
 
-            {/* Share Buttons */}
-            <div className="flex items-center gap-2">
+          {/* Status and Share */}
+          <div className="flex items-center gap-2">
+            <span className={`px-2 py-1 rounded-full font-bold border text-xs ${
+              pool.status === 'active'
+                ? 'border-green-600 bg-green-100 text-green-800'
+                : pool.status === 'locked'
+                ? 'border-yellow-600 bg-yellow-100 text-yellow-800'
+                : pool.status === 'settled'
+                ? 'border-gray-600 bg-gray-100 text-gray-800'
+                : 'border-red-600 bg-red-100 text-red-800'
+            }`}>
+              {pool.status === 'active' ? '🟢 Active' : pool.status === 'locked' ? '⏳ Locked' : pool.status === 'settled' ? '✅ Settled' : '❌ Cancelled'}
+            </span>
+            <span className="text-gray-600 text-xs">#{pool.poolNumber}</span>
+            <span className="text-gray-600 text-xs">•</span>
+            <span className="text-gray-600 text-xs">{pool.timeframeDays}d</span>
+            <span className="text-gray-600 text-xs">•</span>
+            <span className="font-bold text-gray-900 text-sm">
+              {((Number(pool.totalPoolSize) || 0) / 1_000_000_000).toFixed(2)} SOL
+            </span>
+
+            <div className="flex items-center gap-1 ml-2">
               <button
                 onClick={handleCopyLink}
-                className="comic-button bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-300 px-4 py-2 flex items-center gap-2"
+                className="p-1.5 hover:bg-gray-100 rounded transition-colors"
                 title="Copy link"
               >
-                {copied ? (
-                  <>
-                    <FiCheck className="w-4 h-4" />
-                    <span className="body-font">Copied!</span>
-                  </>
-                ) : (
-                  <>
-                    <FiCopy className="w-4 h-4" />
-                    <span className="body-font hidden sm:inline">
-                      Copy Link
-                    </span>
-                  </>
-                )}
+                {copied ? <FiCheck className="w-4 h-4 text-green-600" /> : <FiCopy className="w-4 h-4 text-gray-600" />}
               </button>
               <button
                 onClick={handleTwitterShare}
                 disabled={!trader1Data || !trader2Data}
-                className="comic-button bg-black hover:bg-gray-800 text-white px-4 py-2 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-1.5 hover:bg-gray-100 rounded transition-colors disabled:opacity-50"
                 title="Share on Twitter"
               >
-                <FaXTwitter className="w-4 h-4" />
-                <span className="body-font hidden sm:inline">Share</span>
+                <FaXTwitter className="w-4 h-4 text-gray-900" />
               </button>
-              {/* WebSocket Status */}
-              <div className="flex items-center gap-2 ml-4">
-                <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
-                <span className="text-sm text-gray-600 hidden md:inline">
-                  {isConnected ? 'Live' : 'Disconnected'}
-                </span>
-              </div>
+              <div className={`w-2 h-2 rounded-full ml-1 ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
             </div>
           </div>
         </div>
-
-        {/* Arena Status */}
-        <ArenaStatus pool={pool} />
-
-        {/* Betting Panel */}
-        <BettingPanel
-          pool={pool}
-          onPlaceBet={async (traderChoice, amount, signature) => {
-            // Show success notification
-            setNotification(
-              `Bet placed successfully! ${amount} SOL on Trader ${traderChoice === 0 ? 'A' : 'B'}. Transaction: ${signature.slice(0, 8)}...`
-            );
-            setTimeout(() => setNotification(null), 8000);
-          }}
-        />
 
         {/* Error state */}
         {error && <ErrorDisplay error={error} onRetry={fetchTraderData} />}
 
         {/* Loading state */}
         {loading && <LoadingSpinner />}
-
-        {/* Trader Comparison Section */}
-        {trader1Data && trader2Data && !loading && (
-          <>
-            {/* Chart */}
-            <div className="mb-8">
-              <Chart
-                data={chartData}
-                trader1Name={traderAName}
-                trader2Name={traderBName}
-                trader1Image={traderAImage}
-                trader2Image={traderBImage}
-                onEditTrader1={() => {}}
-                onEditTrader2={() => {}}
-                hideEditButtons={true}
-              />
-            </div>
-
-            {/* ROI Bar Chart - Mobile Only */}
-            <div className="block md:hidden mb-8">
-              <ROIBarChart
-                trader1Name={traderAName}
-                trader2Name={traderBName}
-                trader1Image={traderAImage}
-                trader2Image={traderBImage}
-                trader1ROI={timeframeROI.trader1ROI}
-                trader2ROI={timeframeROI.trader2ROI}
-                trader1Percent={timeframeROI.trader1Percent}
-                trader2Percent={timeframeROI.trader2Percent}
-              />
-            </div>
-
-            {/* Trader Cards */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <TraderCard
-                traderData={trader1Data}
-                traderColor="#3B82F6"
-                traderNumber={1}
-                bio={trader1Data.profile.bio}
-                walletAddress={pool.traderAAddress || ''}
-              />
-              <TraderCard
-                traderData={trader2Data}
-                traderColor="#F97316"
-                traderNumber={2}
-                bio={trader2Data.profile.bio}
-                walletAddress={pool.traderBAddress || ''}
-              />
-            </div>
-          </>
-        )}
       </main>
+
+      {/* Sticky Bottom Panel with Tabs */}
+      {trader1Data && trader2Data && !loading && (
+        <StickyBottomPanel
+          poolInfoSection={
+            <CompactBettingPanel
+              pool={pool}
+              traderAName={traderAName}
+              traderBName={traderBName}
+              traderAImage={traderAImage || undefined}
+              traderBImage={traderBImage || undefined}
+              traderAData={trader1Data}
+              traderBData={trader2Data}
+              onPlaceBet={async (traderChoice, amount, signature) => {
+                setNotification(
+                  `Bet placed successfully! ${amount} SOL on Trader ${traderChoice === 0 ? 'A' : 'B'}. Transaction: ${signature.slice(0, 8)}...`
+                );
+                setTimeout(() => setNotification(null), 8000);
+              }}
+            />
+          }
+          pnlContent={
+            <PNLTabContent
+              trader1Data={trader1Data}
+              trader2Data={trader2Data}
+              trader1Name={traderAName}
+              trader2Name={traderBName}
+              trader1Image={traderAImage || undefined}
+              trader2Image={traderBImage || undefined}
+            />
+          }
+          metricsContent={
+            <MetricsTabContent
+              trader1Data={trader1Data}
+              trader2Data={trader2Data}
+              trader1Name={traderAName}
+              trader2Name={traderBName}
+              trader1Image={traderAImage || undefined}
+              trader2Image={traderBImage || undefined}
+            />
+          }
+          positionsContent={
+            <PositionsTabContent
+              trader1Data={trader1Data}
+              trader2Data={trader2Data}
+              trader1Name={traderAName}
+              trader2Name={traderBName}
+              trader1Image={traderAImage || undefined}
+              trader2Image={traderBImage || undefined}
+            />
+          }
+        />
+      )}
     </div>
   );
 }

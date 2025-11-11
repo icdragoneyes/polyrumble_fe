@@ -18,6 +18,7 @@ interface EnvConfig {
   // Feature Flags
   enableAnalytics: boolean;
   enableDebug: boolean;
+  mockMode: boolean;
 }
 
 function getEnvVar(key: string, defaultValue?: string): string {
@@ -49,6 +50,7 @@ export const env: EnvConfig = {
   // Feature Flags
   enableAnalytics: getBooleanEnvVar('VITE_ENABLE_ANALYTICS', false),
   enableDebug: getBooleanEnvVar('VITE_ENABLE_DEBUG', true),
+  mockMode: getBooleanEnvVar('VITE_MOCK_MODE', false),
 };
 
 // Validate required environment variables

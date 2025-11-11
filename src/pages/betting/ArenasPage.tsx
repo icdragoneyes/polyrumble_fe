@@ -4,11 +4,13 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { api } from '../../services/api';
 import { PoolCard } from '../../components/betting/PoolCard';
 import { useWebSocket } from '../../hooks/useWebSocket';
+import { env } from '../../config/env';
+import { generateMockArenas } from '../../constants/mockData';
 
 export default function ArenasPage() {
   const navigate = useNavigate();
@@ -16,14 +18,26 @@ export default function ArenasPage() {
   const [statusFilter, setStatusFilter] = useState<'all' | 'locked' | 'active' | 'settled'>('all');
   const { isConnected, onPoolUpdated, onPoolCreated, onPoolStatusChanged, onPoolCancelled } = useWebSocket();
 
-  // Fetch active pools
+  // Generate mock arenas once (only regenerates on component mount)
+  const mockArenas = useMemo(() => generateMockArenas(), []);
+
+  // Fetch active pools (or use mock data)
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['pools', 'active'],
     queryFn: async () => {
+      // If mock mode is enabled, return mock data
+      if (env.mockMode) {
+        return {
+          success: true,
+          data: mockArenas,
+        };
+      }
+
+      // Otherwise fetch from API
       const response = await api.pools.active();
       return response.data;
     },
-    refetchInterval: 30000, // Refetch every 30 seconds
+    refetchInterval: env.mockMode ? false : 30000, // Don't refetch in mock mode
   });
 
   // Setup WebSocket event listeners
@@ -105,6 +119,13 @@ export default function ArenasPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Mock Mode Banner */}
+      {env.mockMode && (
+        <div className="bg-yellow-500 text-black px-4 py-2 text-center font-bold">
+          🧪 MOCK MODE ENABLED - Using sample data with real Polymarket traders
+        </div>
+      )}
+
       {/* Realtime Notification */}
       {notification && (
         <div className="fixed top-4 right-4 z-50 animate-slide-in">

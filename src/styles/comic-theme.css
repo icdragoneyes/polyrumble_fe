@@ -96,6 +96,19 @@ body {
   box-shadow: var(--shadow-xl);
 }
 
+/* Brutal Shadow variants */
+.shadow-brutal-sm {
+  box-shadow: var(--shadow-sm);
+}
+
+.shadow-brutal {
+  box-shadow: var(--shadow-md);
+}
+
+.shadow-brutal-lg {
+  box-shadow: var(--shadow-lg);
+}
+
 /* Bold Comic Outline */
 .comic-outline {
   border: var(--border-normal) solid var(--color-black);

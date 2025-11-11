@@ -32,14 +32,19 @@ export function calculatePercentageGrowth(
 
   // Use absolute value of first PNL as base for percentage calculation
   // This ensures we always get positive percentages for profit growth
-  const basePnl = Math.abs(firstPnl) || 100; // Use 100 if starting PNL is 0
+  // Use minimum of 1000 to prevent extreme percentages from small base values
+  const basePnl = Math.max(Math.abs(firstPnl), 1000);
 
   return filteredData.map((point) => {
     // Calculate PNL change from starting point
     const pnlChange = point.p - firstPnl;
 
     // Calculate percentage change based on starting PNL
-    const percentChange = (pnlChange / basePnl) * 100;
+    let percentChange = (pnlChange / basePnl) * 100;
+
+    // Cap extreme percentage values to prevent chart distortion
+    // Allow range of -1000% to +10000% (reasonable for trading performance)
+    percentChange = Math.max(-1000, Math.min(10000, percentChange));
 
     // For display value, show the actual PNL at this point
     const displayValue = point.p;

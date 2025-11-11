@@ -40,7 +40,11 @@ export function WalletConfig({ children }: WalletConfigProps) {
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect>
+      <WalletProvider
+        wallets={wallets}
+        autoConnect
+        localStorageKey="polyrumble_wallet"
+      >
         <WalletModalProvider>
           {children}
         </WalletModalProvider>
