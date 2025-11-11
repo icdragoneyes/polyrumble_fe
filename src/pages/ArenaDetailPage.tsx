@@ -11,6 +11,7 @@ import { api } from "../services/api";
 import { useWebSocket } from "../hooks/useWebSocket";
 import { useTraderData } from "../hooks/useTraderData";
 import { useAutoRefresh } from "../hooks/useAutoRefresh";
+import { useWalletBalance } from "../hooks/useWalletBalance";
 import { StickyBottomPanel } from "../components/arena/StickyBottomPanel";
 import { CompactBettingPanel } from "../components/arena/CompactBettingPanel";
 import { PNLTabContent } from "../components/arena/PNLTabContent";
@@ -24,12 +25,24 @@ import { FaXTwitter } from "react-icons/fa6";
 import { env } from "../config/env";
 import { isMockArenaId, getMockArenaById } from "../constants/mockData";
 
+type TabType = 'pnl' | 'metrics' | 'positions';
+
 export default function ArenaDetailPage() {
   const { id } = useParams<{ id: string }>();
 
   // Pool/Arena data state
   const [notification, setNotification] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabType>('pnl');
+  const [showMobileBettingModal, setShowMobileBettingModal] = useState(false);
+
+  // Wallet state
+  const { connected, balance } = useWalletBalance();
+
+  // Debug wallet state
+  useEffect(() => {
+    console.log('ArenaDetailPage - Wallet State:', { connected, balance });
+  }, [connected, balance]);
 
   // Trader data state
   const [trader1Data, setTrader1Data] = useState<TraderData | null>(null);
@@ -191,10 +204,10 @@ export default function ArenaDetailPage() {
     trader2Data?.profile.profileImage;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-[500px]">
+    <div className="min-h-screen bg-gray-50">
       {/* Mock Mode Banner */}
       {env.mockMode && isMockArena && (
-        <div className="bg-yellow-500 text-black px-2 py-1 text-center font-bold text-xs">
+        <div className="bg-yellow-500 text-black px-4 py-1.5 text-center font-bold text-sm">
           🧪 MOCK MODE - Sample arena with real Polymarket trader data. Betting is simulated.
         </div>
       )}
@@ -215,9 +228,9 @@ export default function ArenaDetailPage() {
         </div>
       )}
 
-      <main className="container mx-auto px-4 py-2 max-w-7xl">
+      <main className="container mx-auto px-4 pt-2 pb-32 lg:pb-24 max-w-7xl">
         {/* Compact Header - Grid Layout */}
-        <div className="mb-2">
+        <div className="mb-3">
           {/* Back Link Row */}
           <div className="mb-1">
             <Link
@@ -230,14 +243,14 @@ export default function ArenaDetailPage() {
           </div>
 
           {/* Title Row */}
-          <div className="flex items-center justify-between mb-1">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
             <h1 className="text-xl md:text-2xl font-bold comic-font leading-tight">
               {traderAName} vs {traderBName}
             </h1>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 md:gap-3 flex-wrap">
               <button
                 onClick={handleCopyLink}
-                className="p-1.5 hover:bg-gray-100 rounded transition-colors"
+                className="hidden sm:block p-1.5 hover:bg-gray-100 rounded transition-colors"
                 title="Copy link"
               >
                 {copied ? <FiCheck className="w-4 h-4 text-green-600" /> : <FiCopy className="w-4 h-4 text-gray-600" />}
@@ -245,12 +258,36 @@ export default function ArenaDetailPage() {
               <button
                 onClick={handleTwitterShare}
                 disabled={!trader1Data || !trader2Data}
-                className="p-1.5 hover:bg-gray-100 rounded transition-colors disabled:opacity-50"
+                className="hidden sm:block p-1.5 hover:bg-gray-100 rounded transition-colors disabled:opacity-50"
                 title="Share on Twitter"
               >
                 <FaXTwitter className="w-4 h-4 text-gray-900" />
               </button>
-              <div className={`w-2 h-2 rounded-full ml-1 ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+
+              {/* WebSocket Status Indicator - Hide in mock mode */}
+              {!env.mockMode && (
+                <>
+                  <div className="hidden lg:flex items-center gap-2">
+                    <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
+                    <span className="text-sm text-gray-600 body-font font-medium">
+                      {isConnected ? '🟢 Live' : '🔴 Disconnected'}
+                    </span>
+                  </div>
+
+                  {/* Mobile: Just the dot */}
+                  <div className="lg:hidden">
+                    <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
+                  </div>
+                </>
+              )}
+
+              {/* Wallet Balance Display */}
+              {connected && (
+                <div className="hidden md:flex flex-col items-end text-sm">
+                  <span className="text-gray-600 body-font text-xs">Wallet</span>
+                  <span className="font-bold text-green-600">Connected ({balance.toFixed(2)} SOL)</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -282,11 +319,73 @@ export default function ArenaDetailPage() {
 
         {/* Loading state */}
         {loading && <LoadingSpinner />}
+
+        {/* Middle Section - Desktop: 2 column layout (75% content + 25% betting) | Mobile: Full width content */}
+        {trader1Data && trader2Data && !loading && (
+          <div className="mt-4 lg:grid lg:grid-cols-4 lg:gap-6">
+            {/* Left/Main Content Area - 75% on desktop (3/4 columns) */}
+            <div className="lg:col-span-3">
+              {activeTab === 'pnl' && (
+                <PNLTabContent
+                  trader1Data={trader1Data}
+                  trader2Data={trader2Data}
+                  trader1Name={traderAName}
+                  trader2Name={traderBName}
+                  trader1Image={traderAImage || undefined}
+                  trader2Image={traderBImage || undefined}
+                />
+              )}
+              {activeTab === 'metrics' && (
+                <MetricsTabContent
+                  trader1Data={trader1Data}
+                  trader2Data={trader2Data}
+                  trader1Name={traderAName}
+                  trader2Name={traderBName}
+                  trader1Image={traderAImage || undefined}
+                  trader2Image={traderBImage || undefined}
+                />
+              )}
+              {activeTab === 'positions' && (
+                <PositionsTabContent
+                  trader1Data={trader1Data}
+                  trader2Data={trader2Data}
+                  trader1Name={traderAName}
+                  trader2Name={traderBName}
+                  trader1Image={traderAImage || undefined}
+                  trader2Image={traderBImage || undefined}
+                />
+              )}
+            </div>
+
+            {/* Right Sidebar - 25% on desktop (1/4 columns) | Hidden on mobile */}
+            <div className="hidden lg:block lg:col-span-1">
+              <div className="sticky top-4">
+                <CompactBettingPanel
+                  pool={pool}
+                  traderAName={traderAName}
+                  traderBName={traderBName}
+                  traderAImage={traderAImage || undefined}
+                  traderBImage={traderBImage || undefined}
+                  traderAData={trader1Data}
+                  traderBData={trader2Data}
+                  onPlaceBet={async (traderChoice, amount, signature) => {
+                    setNotification(
+                      `Bet placed successfully! ${amount} SOL on Trader ${traderChoice === 0 ? 'A' : 'B'}. Transaction: ${signature.slice(0, 8)}...`
+                    );
+                    setTimeout(() => setNotification(null), 8000);
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </main>
 
-      {/* Sticky Bottom Panel with Tabs */}
+      {/* Sticky Bottom Panel - Tab Buttons + Betting Controls */}
       {trader1Data && trader2Data && !loading && (
         <StickyBottomPanel
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
           poolInfoSection={
             <CompactBettingPanel
               pool={pool}
@@ -304,36 +403,8 @@ export default function ArenaDetailPage() {
               }}
             />
           }
-          pnlContent={
-            <PNLTabContent
-              trader1Data={trader1Data}
-              trader2Data={trader2Data}
-              trader1Name={traderAName}
-              trader2Name={traderBName}
-              trader1Image={traderAImage || undefined}
-              trader2Image={traderBImage || undefined}
-            />
-          }
-          metricsContent={
-            <MetricsTabContent
-              trader1Data={trader1Data}
-              trader2Data={trader2Data}
-              trader1Name={traderAName}
-              trader2Name={traderBName}
-              trader1Image={traderAImage || undefined}
-              trader2Image={traderBImage || undefined}
-            />
-          }
-          positionsContent={
-            <PositionsTabContent
-              trader1Data={trader1Data}
-              trader2Data={trader2Data}
-              trader1Name={traderAName}
-              trader2Name={traderBName}
-              trader1Image={traderAImage || undefined}
-              trader2Image={traderBImage || undefined}
-            />
-          }
+          showMobileBettingModal={showMobileBettingModal}
+          onToggleMobileBetting={() => setShowMobileBettingModal(!showMobileBettingModal)}
         />
       )}
     </div>

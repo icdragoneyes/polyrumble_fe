@@ -52,8 +52,13 @@ export function CompactBettingPanel({
 
   const bettingAllowed = isBettingAllowed(pool);
 
-  // Truncate trader names for buttons
-  const truncateTraderName = (name: string, maxLength: number = 6): string => {
+  // Truncate trader names with smart formatting
+  const truncateTraderName = (name: string, maxLength: number = 18): string => {
+    // If it looks like a wallet address (starts with 0x), format it specially
+    if (name.startsWith('0x') && name.length > 10) {
+      return `${name.substring(0, 6)}...${name.substring(name.length - 4)}`;
+    }
+
     if (name.length <= maxLength) return name;
     return name.substring(0, maxLength) + '...';
   };
@@ -161,12 +166,12 @@ export function CompactBettingPanel({
             className="w-full p-3 rounded-lg border-2 border-blue-600 bg-blue-50 hover:bg-blue-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
                 {traderAImage && (
-                  <img src={traderAImage} alt={traderAName} className="w-8 h-8 rounded-full" />
+                  <img src={traderAImage} alt={traderAName} className="w-8 h-8 rounded-full flex-shrink-0" />
                 )}
-                <div className="text-left">
-                  <div className="text-sm font-bold text-blue-600">{traderAName}</div>
+                <div className="text-left min-w-0 flex-1">
+                  <div className="text-sm font-bold text-blue-600 truncate">{truncateTraderName(traderAName, 20)}</div>
                   {traderAData && (
                     <div className="text-xs text-gray-600">
                       ${(traderAData.metrics.portfolioValue / 1000).toFixed(1)}k • {' '}
@@ -177,7 +182,7 @@ export function CompactBettingPanel({
                   )}
                 </div>
               </div>
-              <div className="text-right">
+              <div className="text-right flex-shrink-0 ml-2">
                 <div className="text-xs text-gray-600">Odds: {pool.currentOddsA?.toFixed(2)}x</div>
                 <div className="text-xs font-bold text-blue-600">Bet Trader A</div>
               </div>
@@ -190,12 +195,12 @@ export function CompactBettingPanel({
             className="w-full p-3 rounded-lg border-2 border-orange-600 bg-orange-50 hover:bg-orange-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
                 {traderBImage && (
-                  <img src={traderBImage} alt={traderBName} className="w-8 h-8 rounded-full" />
+                  <img src={traderBImage} alt={traderBName} className="w-8 h-8 rounded-full flex-shrink-0" />
                 )}
-                <div className="text-left">
-                  <div className="text-sm font-bold text-orange-600">{traderBName}</div>
+                <div className="text-left min-w-0 flex-1">
+                  <div className="text-sm font-bold text-orange-600 truncate">{truncateTraderName(traderBName, 20)}</div>
                   {traderBData && (
                     <div className="text-xs text-gray-600">
                       ${(traderBData.metrics.portfolioValue / 1000).toFixed(1)}k • {' '}
@@ -206,7 +211,7 @@ export function CompactBettingPanel({
                   )}
                 </div>
               </div>
-              <div className="text-right">
+              <div className="text-right flex-shrink-0 ml-2">
                 <div className="text-xs text-gray-600">Odds: {pool.currentOddsB?.toFixed(2)}x</div>
                 <div className="text-xs font-bold text-orange-600">Bet Trader B</div>
               </div>
@@ -214,75 +219,109 @@ export function CompactBettingPanel({
           </button>
         </div>
 
-        {/* Desktop: New Layout */}
+        {/* Desktop: Vertical Card Layout */}
         <div className="hidden lg:block space-y-3">
-          {/* Trader A - Summary + Button */}
-          <div className={`flex items-center gap-2 transition-all duration-300 ${selectedPool === 'A' ? 'scale-110' : selectedPool === 'B' ? 'scale-90 opacity-50' : ''}`}>
-            <div className="flex-1 flex items-center gap-2 p-2 rounded-lg border-2 border-blue-200 bg-blue-50">
+          {/* Trader A Card */}
+          <div className={`rounded-xl border-3 border-black bg-gradient-to-br from-blue-50 to-blue-100 p-3 shadow-brutal transition-all duration-300 ${
+            selectedPool === 'A' ? 'scale-105 ring-4 ring-blue-500' : selectedPool === 'B' ? 'scale-95 opacity-60' : ''
+          }`}>
+            {/* Profile Picture - Top */}
+            <div className="flex justify-center mb-3">
               {traderAImage && (
-                <img src={traderAImage} alt={traderAName} className={`rounded-full transition-all duration-300 ${selectedPool === 'A' ? 'w-12 h-12' : 'w-7 h-7'}`} />
+                <img
+                  src={traderAImage}
+                  alt={traderAName}
+                  className="w-16 h-16 rounded-full border-4 border-blue-600 shadow-md"
+                />
               )}
-              <div className="flex-1 min-w-0">
-                <div className={`font-bold text-blue-600 truncate transition-all duration-300 ${selectedPool === 'A' ? 'text-base' : 'text-[11px]'}`}>{traderAName}</div>
-                {traderAData && (
-                  <div className={`text-gray-600 transition-all duration-300 ${selectedPool === 'A' ? 'text-xs' : 'text-[9px]'}`}>
-                    ${(traderAData.metrics.portfolioValue / 1000).toFixed(1)}k • {' '}
-                    <span className={traderAData.metrics.totalPnl > 0 ? 'text-green-600' : 'text-red-600'}>
+            </div>
+
+            {/* Trader Details - Center */}
+            <div className="text-center mb-3">
+              <div className="font-bold text-blue-900 text-base mb-2 truncate px-2">
+                {truncateTraderName(traderAName, 22)}
+              </div>
+              {traderAData && (
+                <>
+                  <div className="text-xs text-gray-800 mb-1">
+                    Portfolio: <span className="font-bold">${(traderAData.metrics.portfolioValue / 1000).toFixed(1)}k</span>
+                  </div>
+                  <div className="text-xs text-gray-800 mb-1">
+                    P&L: <span className={`font-bold ${traderAData.metrics.totalPnl > 0 ? 'text-green-600' : 'text-red-600'}`}>
                       ${(traderAData.metrics.totalPnl / 1000).toFixed(1)}k
                     </span>
                   </div>
-                )}
-                <div className={`text-gray-600 transition-all duration-300 ${selectedPool === 'A' ? 'text-xs' : 'text-[9px]'}`}>
-                  {formatSOL(poolASizeSOL)} SOL • {poolAPercent.toFixed(0)}% • {pool.currentOddsA?.toFixed(2)}x
-                </div>
+                </>
+              )}
+              <div className="text-xs text-gray-700 font-medium">
+                {formatSOL(poolASizeSOL)} SOL • {poolAPercent.toFixed(0)}% • {pool.currentOddsA?.toFixed(2)}x odds
               </div>
             </div>
+
+            {/* Bet Button - Bottom */}
             <button
               onClick={() => connected && bettingAllowed && handlePoolSelection('A')}
               disabled={!connected || !bettingAllowed}
-              className={`px-4 py-2 rounded-lg font-bold text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap ${
+              className={`w-full py-3 px-4 rounded-lg font-bold text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black shadow-brutal-sm hover:shadow-none active:translate-x-1 active:translate-y-1 ${
                 selectedPool === 'A'
-                  ? 'bg-blue-600 text-white shadow-lg scale-105'
+                  ? 'bg-blue-600 text-white'
                   : 'bg-blue-500 text-white hover:bg-blue-600'
               }`}
-              title={`Bet ${traderAName}`}
+              title={`Bet on ${traderAName}`}
             >
-              Bet {truncateTraderName(traderAName)}
+              {selectedPool === 'A' ? '✓ SELECTED' : `Bet ${truncateTraderName(traderAName, 20)}`}
             </button>
           </div>
 
-          {/* Trader B - Summary + Button */}
-          <div className={`flex items-center gap-2 transition-all duration-300 ${selectedPool === 'B' ? 'scale-110' : selectedPool === 'A' ? 'scale-90 opacity-50' : ''}`}>
-            <div className="flex-1 flex items-center gap-2 p-2 rounded-lg border-2 border-orange-200 bg-orange-50">
+          {/* Trader B Card */}
+          <div className={`rounded-xl border-3 border-black bg-gradient-to-br from-orange-50 to-orange-100 p-3 shadow-brutal transition-all duration-300 ${
+            selectedPool === 'B' ? 'scale-105 ring-4 ring-orange-500' : selectedPool === 'A' ? 'scale-95 opacity-60' : ''
+          }`}>
+            {/* Profile Picture - Top */}
+            <div className="flex justify-center mb-3">
               {traderBImage && (
-                <img src={traderBImage} alt={traderBName} className={`rounded-full transition-all duration-300 ${selectedPool === 'B' ? 'w-12 h-12' : 'w-7 h-7'}`} />
+                <img
+                  src={traderBImage}
+                  alt={traderBName}
+                  className="w-16 h-16 rounded-full border-4 border-orange-600 shadow-md"
+                />
               )}
-              <div className="flex-1 min-w-0">
-                <div className={`font-bold text-orange-600 truncate transition-all duration-300 ${selectedPool === 'B' ? 'text-base' : 'text-[11px]'}`}>{traderBName}</div>
-                {traderBData && (
-                  <div className={`text-gray-600 transition-all duration-300 ${selectedPool === 'B' ? 'text-xs' : 'text-[9px]'}`}>
-                    ${(traderBData.metrics.portfolioValue / 1000).toFixed(1)}k • {' '}
-                    <span className={traderBData.metrics.totalPnl > 0 ? 'text-green-600' : 'text-red-600'}>
+            </div>
+
+            {/* Trader Details - Center */}
+            <div className="text-center mb-3">
+              <div className="font-bold text-orange-900 text-base mb-2 truncate px-2">
+                {truncateTraderName(traderBName, 22)}
+              </div>
+              {traderBData && (
+                <>
+                  <div className="text-xs text-gray-800 mb-1">
+                    Portfolio: <span className="font-bold">${(traderBData.metrics.portfolioValue / 1000).toFixed(1)}k</span>
+                  </div>
+                  <div className="text-xs text-gray-800 mb-1">
+                    P&L: <span className={`font-bold ${traderBData.metrics.totalPnl > 0 ? 'text-green-600' : 'text-red-600'}`}>
                       ${(traderBData.metrics.totalPnl / 1000).toFixed(1)}k
                     </span>
                   </div>
-                )}
-                <div className={`text-gray-600 transition-all duration-300 ${selectedPool === 'B' ? 'text-xs' : 'text-[9px]'}`}>
-                  {formatSOL(poolBSizeSOL)} SOL • {poolBPercent.toFixed(0)}% • {pool.currentOddsB?.toFixed(2)}x
-                </div>
+                </>
+              )}
+              <div className="text-xs text-gray-700 font-medium">
+                {formatSOL(poolBSizeSOL)} SOL • {poolBPercent.toFixed(0)}% • {pool.currentOddsB?.toFixed(2)}x odds
               </div>
             </div>
+
+            {/* Bet Button - Bottom */}
             <button
               onClick={() => connected && bettingAllowed && handlePoolSelection('B')}
               disabled={!connected || !bettingAllowed}
-              className={`px-4 py-2 rounded-lg font-bold text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap ${
+              className={`w-full py-3 px-4 rounded-lg font-bold text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black shadow-brutal-sm hover:shadow-none active:translate-x-1 active:translate-y-1 ${
                 selectedPool === 'B'
-                  ? 'bg-orange-600 text-white shadow-lg scale-105'
+                  ? 'bg-orange-600 text-white'
                   : 'bg-orange-500 text-white hover:bg-orange-600'
               }`}
-              title={`Bet ${traderBName}`}
+              title={`Bet on ${traderBName}`}
             >
-              Bet {truncateTraderName(traderBName)}
+              {selectedPool === 'B' ? '✓ SELECTED' : `Bet ${truncateTraderName(traderBName, 20)}`}
             </button>
           </div>
 

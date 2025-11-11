@@ -10,6 +10,7 @@ import { FiArrowLeft } from 'react-icons/fi';
 import { api } from '../../services/api';
 import { PoolCard } from '../../components/betting/PoolCard';
 import { useWebSocket } from '../../hooks/useWebSocket';
+import { useWalletBalance } from '../../hooks/useWalletBalance';
 import { env } from '../../config/env';
 import { generateMockArenas } from '../../constants/mockData';
 
@@ -18,6 +19,7 @@ export default function ArenasPage() {
   const [notification, setNotification] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<'all' | 'locked' | 'active' | 'settled'>('all');
   const { isConnected, onPoolUpdated, onPoolCreated, onPoolStatusChanged, onPoolCancelled } = useWebSocket();
+  const { connected, balance } = useWalletBalance();
 
   // Generate mock arenas once (only regenerates on component mount)
   const mockArenas = useMemo(() => generateMockArenas(), []);
@@ -122,7 +124,7 @@ export default function ArenasPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Mock Mode Banner */}
       {env.mockMode && (
-        <div className="bg-yellow-500 text-black px-4 py-2 text-center font-bold">
+        <div className="bg-yellow-500 text-black px-4 py-1.5 text-center font-bold text-sm">
           🧪 MOCK MODE ENABLED - Using sample data with real Polymarket traders
         </div>
       )}
@@ -159,12 +161,33 @@ export default function ArenasPage() {
                 Choose an arena and bet on which trader will outperform
               </p>
             </div>
-            {/* WebSocket Status Indicator */}
-            <div className="flex items-center gap-3">
-              <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
-              <span className="text-sm text-gray-600 body-font font-medium">
-                {isConnected ? '🟢 Live' : '🔴 Disconnected'}
-              </span>
+            {/* WebSocket Status, Wallet Balance, and Connect Button */}
+            <div className="flex items-center gap-1 md:gap-3">
+              {/* WebSocket Status Indicator - Hide in mock mode */}
+              {!env.mockMode && (
+                <>
+                  {/* Desktop */}
+                  <div className="hidden lg:flex items-center gap-2">
+                    <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
+                    <span className="text-sm text-gray-600 body-font font-medium">
+                      {isConnected ? '🟢 Live' : '🔴 Disconnected'}
+                    </span>
+                  </div>
+
+                  {/* Mobile: Just the dot */}
+                  <div className="lg:hidden">
+                    <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
+                  </div>
+                </>
+              )}
+
+              {/* Wallet Balance Display */}
+              {connected && (
+                <div className="hidden md:flex flex-col items-end text-sm">
+                  <span className="text-gray-600 body-font text-xs">Wallet</span>
+                  <span className="font-bold text-green-600">Connected ({balance.toFixed(2)} SOL)</span>
+                </div>
+              )}
             </div>
           </div>
 
