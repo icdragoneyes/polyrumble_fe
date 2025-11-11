@@ -11,7 +11,7 @@ import { api } from "../services/api";
 import { useWebSocket } from "../hooks/useWebSocket";
 import { useTraderData } from "../hooks/useTraderData";
 import { useAutoRefresh } from "../hooks/useAutoRefresh";
-import { useWalletBalance } from "../hooks/useWalletBalance";
+import { useWalletStore } from "../stores/walletStore";
 import { Header } from "../components/common/Header";
 import { StickyBottomPanel } from "../components/arena/StickyBottomPanel";
 import { CompactBettingPanel } from "../components/arena/CompactBettingPanel";
@@ -37,13 +37,19 @@ export default function ArenaDetailPage() {
   const [activeTab, setActiveTab] = useState<TabType>('pnl');
   const [showMobileBettingModal, setShowMobileBettingModal] = useState(false);
 
-  // Wallet state
-  const { connected, balance } = useWalletBalance();
+  // Wallet state - use Zustand store directly for consistent state
+  const connected = useWalletStore(state => state.connected);
+  const balance = useWalletStore(state => state.balance);
+  const publicKey = useWalletStore(state => state.publicKey);
 
   // Debug wallet state
   useEffect(() => {
-    console.log('ArenaDetailPage - Wallet State:', { connected, balance });
-  }, [connected, balance]);
+    console.log('[ArenaDetailPage] Wallet State from Store:', {
+      connected,
+      balance,
+      publicKey: publicKey ? `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}` : null
+    });
+  }, [connected, balance, publicKey]);
 
   // Trader data state
   const [trader1Data, setTrader1Data] = useState<TraderData | null>(null);

@@ -8,10 +8,14 @@ import { useWalletStore } from '../stores/walletStore';
  * Provides balance fetching and validation utilities
  */
 export function useWalletBalance() {
-  const { publicKey, connected } = useWallet();
+  const { publicKey } = useWallet();
   const { connection } = useConnection();
+  const connected = useWalletStore(state => state.connected);
   const balance = useWalletStore(state => state.balance);
   const setBalance = useWalletStore(state => state.setBalance);
+
+  console.log('[useWalletBalance] Store values:', { connected, balance, publicKey: publicKey?.toBase58() });
+  console.log('[useWalletBalance] Will return:', { connected });
 
   // Fetch balance on demand
   const { data: freshBalance, isLoading, refetch } = useQuery({

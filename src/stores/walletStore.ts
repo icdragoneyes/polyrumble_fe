@@ -23,17 +23,29 @@ export const useWalletStore = create<WalletState>()(
       balance: 0,
 
       // Actions
-      setConnected: (connected) => set({ connected }),
+      setConnected: (connected) => {
+        console.log('[WalletStore] setConnected called with:', connected);
+        set({ connected });
+      },
 
-      setPublicKey: (publicKey) => set({ publicKey }),
+      setPublicKey: (publicKey) => {
+        console.log('[WalletStore] setPublicKey called with:', publicKey ? `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}` : null);
+        set({ publicKey });
+      },
 
-      setBalance: (balance) => set({ balance }),
+      setBalance: (balance) => {
+        console.log('[WalletStore] setBalance called with:', balance, 'SOL');
+        set({ balance });
+      },
 
-      disconnect: () => set({
-        connected: false,
-        publicKey: null,
-        balance: 0,
-      }),
+      disconnect: () => {
+        console.log('[WalletStore] disconnect called');
+        set({
+          connected: false,
+          publicKey: null,
+          balance: 0,
+        });
+      },
     }),
     { name: 'WalletStore' }
   )

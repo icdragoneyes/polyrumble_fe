@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import type { Pool } from '../../types';
-import { useWalletBalance } from '../../hooks/useWalletBalance';
+import { useWalletStore } from '../../stores/walletStore';
 import { useBetting } from '../../hooks/useBetting';
 import { formatSOL, formatSOLWithSymbol, validateBetAmount } from '../../utils/solana';
 import { getTraderChoice, isBettingAllowed, getPoolSize } from '../../utils/betting';
@@ -29,9 +28,18 @@ export function CompactBettingPanel({
   traderBData,
   onPlaceBet
 }: CompactBettingPanelProps) {
-  const { connected } = useWallet();
-  const { balance } = useWalletBalance();
+  // Use Zustand store directly for consistent state across components
+  const connected = useWalletStore(state => state.connected);
+  const balance = useWalletStore(state => state.balance);
+  const publicKey = useWalletStore(state => state.publicKey);
+
   const { simulateBet, placeBet, isSimulating, isPlacingBet, lastSimulation } = useBetting(pool.id);
+
+  console.log('[CompactBettingPanel] Wallet State:', {
+    connected,
+    balance,
+    publicKey: publicKey ? `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}` : null
+  });
 
   const [selectedPool, setSelectedPool] = useState<'A' | 'B' | null>(null);
   const [betAmount, setBetAmount] = useState('');

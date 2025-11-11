@@ -11,7 +11,6 @@ import { api } from '../../services/api';
 import { Header } from '../../components/common/Header';
 import { PoolCard } from '../../components/betting/PoolCard';
 import { useWebSocket } from '../../hooks/useWebSocket';
-import { useWalletBalance } from '../../hooks/useWalletBalance';
 import { env } from '../../config/env';
 import { generateMockArenas } from '../../constants/mockData';
 
@@ -20,7 +19,7 @@ export default function ArenasPage() {
   const [notification, setNotification] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<'all' | 'locked' | 'active' | 'settled'>('all');
   const { isConnected, onPoolUpdated, onPoolCreated, onPoolStatusChanged, onPoolCancelled } = useWebSocket();
-  const { connected, balance } = useWalletBalance();
+  // Note: Wallet state is available via useWalletStore if needed for future features
 
   // Generate mock arenas once (only regenerates on component mount)
   const mockArenas = useMemo(() => generateMockArenas(), []);

@@ -4,6 +4,7 @@ import ArenasPage from '../pages/betting/ArenasPage';
 import ArenaDetailPage from '../pages/ArenaDetailPage';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import LoginPage from '../pages/admin/LoginPage';
+import X402JsonPage from '../pages/X402JsonPage';
 
 /**
  * Application router configuration
@@ -12,6 +13,7 @@ import LoginPage from '../pages/admin/LoginPage';
  * / - Landing page with hero and CTAs
  * /arenas - List of active betting pools/arenas
  * /arena/:id - Detailed arena view (trader comparison + betting interface)
+ * /x402 - x402 protocol API discovery for AI agents
  * /admin/* - Admin dashboard for creating and managing arenas
  */
 export const router = createBrowserRouter([
@@ -26,6 +28,10 @@ export const router = createBrowserRouter([
   {
     path: '/arena/:id',
     element: <ArenaDetailPage />,
+  },
+  {
+    path: '/x402',
+    element: <X402JsonPage />,
   },
   {
     path: '/admin',

@@ -1,6 +1,5 @@
 import { HiRefresh } from "react-icons/hi";
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletStore } from '../../stores/walletStore';
 
 interface HeaderProps {
@@ -11,8 +10,10 @@ interface HeaderProps {
 }
 
 export function Header({ countdown, onRefresh, isLoading, showRefresh = false }: HeaderProps) {
-  const { connected } = useWallet();
+  const connected = useWalletStore(state => state.connected);
   const balance = useWalletStore(state => state.balance);
+
+  console.log('[Header] Wallet state from store:', { connected, balance });
 
   return (
     <header className="bg-white border-b-4 border-black">
@@ -38,6 +39,11 @@ export function Header({ countdown, onRefresh, isLoading, showRefresh = false }:
             </h1>
           </div>
           <div className="flex items-center gap-4">
+            {/* Debug: Show connection status */}
+            <div className="text-xs px-2 py-1 rounded bg-gray-100 border">
+              Store: {connected ? '✅' : '❌'}
+            </div>
+
             {/* Balance display */}
             {connected && (
               <div className="hidden md:flex flex-col items-end text-sm">

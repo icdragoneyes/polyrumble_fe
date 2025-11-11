@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
 import type { Pool } from '../../types';
-import { useWalletBalance } from '../../hooks/useWalletBalance';
+import { useWalletStore } from '../../stores/walletStore';
 import { useBetting } from '../../hooks/useBetting';
 import { formatSOLWithSymbol, validateBetAmount } from '../../utils/solana';
 import { getTraderChoice } from '../../utils/betting';
@@ -27,8 +26,9 @@ export function MobileBettingDialog({
   traderData,
   onPlaceBet,
 }: MobileBettingDialogProps) {
-  const { connected } = useWallet();
-  const { balance } = useWalletBalance();
+  // Use Zustand store directly for consistent state
+  const connected = useWalletStore(state => state.connected);
+  const balance = useWalletStore(state => state.balance);
   const { simulateBet, placeBet, isSimulating, isPlacingBet, lastSimulation } = useBetting(pool.id);
 
   const [betAmount, setBetAmount] = useState('');

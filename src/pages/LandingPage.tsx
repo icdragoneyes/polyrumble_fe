@@ -18,22 +18,29 @@ export default function LandingPage() {
 
           {/* Tagline */}
           <p className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
-            💥 Watch Traders Battle. Bet on Winners. 🥊
+            💥 Compare Polymarket Traders. Bet on Winners. 🥊
           </p>
 
           <p className="text-lg md:text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
-            Compare Polymarket traders side-by-side, analyze their performance,
-            and bet on who will have better ROI. All powered by real-time data and SOL.
+            The ultimate Polymarket trader comparison platform. Analyze performance with real-time P&L charts,
+            bet on top traders with SOL, and integrate AI agents using the x402 payment protocol for autonomous betting.
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex justify-center items-center mb-16">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-16">
             <Link
               to="/arenas"
               className="w-full sm:w-auto comic-button bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-12 py-5 text-2xl shadow-brutal-lg transform hover:scale-105 transition-all"
             >
               🎯 Browse Arenas
             </Link>
+            <a
+              href="/x402"
+              target="_blank"
+              className="w-full sm:w-auto comic-button bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white px-12 py-5 text-2xl shadow-brutal-lg transform hover:scale-105 transition-all"
+            >
+              📡 View x402 Spec (JSON)
+            </a>
           </div>
         </div>
 
@@ -42,37 +49,74 @@ export default function LandingPage() {
           {/* Feature 1 */}
           <div className="bg-white rounded-lg p-6 shadow-brutal border-4 border-black">
             <div className="text-4xl mb-4">📈</div>
-            <h3 className="text-xl font-bold mb-2 comic-font">Real-Time Charts</h3>
+            <h3 className="text-xl font-bold mb-2 comic-font">Polymarket Analytics</h3>
             <p className="text-gray-600 body-font">
-              Live P&L comparison with beautiful charts showing trader performance
+              Real-time P&L comparison charts for Polymarket traders with live performance data and ROI metrics
             </p>
           </div>
 
           {/* Feature 2 */}
           <div className="bg-white rounded-lg p-6 shadow-brutal border-4 border-black">
             <div className="text-4xl mb-4">💰</div>
-            <h3 className="text-xl font-bold mb-2 comic-font">SOL Betting</h3>
+            <h3 className="text-xl font-bold mb-2 comic-font">Solana Betting</h3>
             <p className="text-gray-600 body-font">
-              Bet on which trader will perform better using Solana (SOL)
+              Bet on Polymarket trader performance using SOL cryptocurrency on the Solana blockchain
             </p>
           </div>
 
           {/* Feature 3 */}
           <div className="bg-white rounded-lg p-6 shadow-brutal border-4 border-black">
-            <div className="text-4xl mb-4">🔴</div>
-            <h3 className="text-xl font-bold mb-2 comic-font">Live Updates</h3>
+            <div className="text-4xl mb-4">🤖</div>
+            <h3 className="text-xl font-bold mb-2 comic-font">x402 AI Agent API</h3>
             <p className="text-gray-600 body-font">
-              WebSocket-powered real-time updates for pools and trader data
+              Integrate AI agents with x402 payment protocol for autonomous Polymarket betting and trading
             </p>
           </div>
 
           {/* Feature 4 */}
           <div className="bg-white rounded-lg p-6 shadow-brutal border-4 border-black">
-            <div className="text-4xl mb-4">🚀</div>
-            <h3 className="text-xl font-bold mb-2 comic-font">Social Sharing</h3>
+            <div className="text-4xl mb-4">🔴</div>
+            <h3 className="text-xl font-bold mb-2 comic-font">Live Updates</h3>
             <p className="text-gray-600 body-font">
-              Share rumbles on Twitter and create rumbles via Telegram bot
+              WebSocket-powered real-time updates for betting pools and Polymarket trader data
             </p>
+          </div>
+        </div>
+
+        {/* AI Integration Section */}
+        <div className="mt-24 max-w-4xl mx-auto">
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 border-4 border-black rounded-lg p-8 shadow-brutal-xl">
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              <div className="text-6xl">🤖</div>
+              <div className="flex-1 text-center md:text-left">
+                <h3 className="text-3xl font-bold mb-3 comic-font text-gray-800">
+                  AI Agent Integration (x402) <span className="text-lg text-gray-500">(coming soon)</span>
+                </h3>
+                <p className="text-gray-600 body-font mb-4">
+                  Integrate PolyRumble with your AI agents using the standard x402 payment protocol.
+                  Pay-per-use API access powered by PayAI on Solana.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+                  <a
+                    href="/x402"
+                    target="_blank"
+                    className="comic-button bg-gradient-to-r from-green-500 to-blue-600 text-white px-6 py-3 text-lg"
+                  >
+                    📡 View x402 Spec (JSON)
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-white rounded border-2 border-black p-4">
+                <div className="font-bold text-blue-600 mb-1">Standard Protocol</div>
+                <div className="text-sm text-gray-600">Use existing x402 libraries and tools</div>
+              </div>
+              <div className="bg-white rounded border-2 border-black p-4">
+                <div className="font-bold text-purple-600 mb-1">Pay-per-Use</div>
+                <div className="text-sm text-gray-600">Only pay for API calls you actually make</div>
+              </div>
+            </div>
           </div>
         </div>
 

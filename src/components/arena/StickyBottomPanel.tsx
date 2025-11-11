@@ -19,6 +19,10 @@ export function StickyBottomPanel({
   onToggleMobileBetting,
   connected,
 }: StickyBottomPanelProps) {
+  console.log('[StickyBottomPanel] Received connected prop:', connected);
+  console.log('[StickyBottomPanel] typeof connected:', typeof connected);
+  console.log('[StickyBottomPanel] Button will show:', connected ? 'PLACE YOUR BET' : 'CONNECT WALLET');
+
   const tabs = [
     { id: 'pnl' as TabType, label: 'PNL', icon: '📈' },
     { id: 'metrics' as TabType, label: 'Metrics', icon: '📊' },
@@ -62,7 +66,9 @@ export function StickyBottomPanel({
             >
               <div className="flex items-center justify-center gap-2">
                 <span className="text-2xl">{connected ? '💰' : '🔗'}</span>
-                <span className="text-lg">{connected ? 'PLACE YOUR BET' : 'CONNECT WALLET'}</span>
+                <span className="text-lg">
+                  {connected ? 'PLACE YOUR BET' : 'CONNECT WALLET'} {/* Debug: {String(connected)} */}
+                </span>
               </div>
             </button>
           </div>

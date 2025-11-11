@@ -16,6 +16,7 @@ export function WalletSync() {
 
   // Sync connection state and public key
   useEffect(() => {
+    console.log('[WalletSync] Syncing wallet state:', { connected, publicKey: publicKey?.toBase58() });
     setConnected(connected);
     setPublicKey(publicKey?.toBase58() || null);
 
@@ -28,17 +29,24 @@ export function WalletSync() {
   // Fetch and sync balance
   useEffect(() => {
     if (!publicKey || !connected) {
+      console.log('[WalletSync] No publicKey or not connected, setting balance to 0');
       setBalance(0);
       return;
     }
 
     const fetchBalance = async () => {
       try {
-        const balance = await connection.getBalance(publicKey);
-        // Convert lamports to SOL
-        setBalance(balance / 1_000_000_000);
+        console.log('[WalletSync] Fetching balance for:', publicKey.toBase58());
+        const balanceLamports = await connection.getBalance(publicKey);
+        const balanceSOL = balanceLamports / 1_000_000_000;
+        console.log('[WalletSync] Balance fetched:', {
+          lamports: balanceLamports,
+          sol: balanceSOL,
+          publicKey: publicKey.toBase58()
+        });
+        setBalance(balanceSOL);
       } catch (error) {
-        console.error('Failed to fetch balance:', error);
+        console.error('[WalletSync] Failed to fetch balance:', error);
         // Don't throw, just log - balance will retry on next interval
       }
     };
