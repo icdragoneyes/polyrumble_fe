@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import type { Pool } from '../../types';
+import { fetchTraderProfile } from '../../services/polymarketApi';
 
 interface PoolCardProps {
   pool: Pool;
@@ -7,6 +9,36 @@ interface PoolCardProps {
 }
 
 export function PoolCard({ pool, onClick }: PoolCardProps) {
+  const [traderAName, setTraderAName] = useState<string>('Trader A');
+  const [traderBName, setTraderBName] = useState<string>('Trader B');
+  const [loadingNames, setLoadingNames] = useState(true);
+
+  // Fetch trader names
+  useEffect(() => {
+    const loadTraderNames = async () => {
+      if (!pool.traderAAddress || !pool.traderBAddress) {
+        setLoadingNames(false);
+        return;
+      }
+
+      try {
+        const [profileA, profileB] = await Promise.all([
+          fetchTraderProfile(pool.traderAAddress),
+          fetchTraderProfile(pool.traderBAddress),
+        ]);
+
+        setTraderAName(profileA.name || 'Trader A');
+        setTraderBName(profileB.name || 'Trader B');
+      } catch (error) {
+        console.error('Error loading trader names:', error);
+        // Keep default names on error
+      } finally {
+        setLoadingNames(false);
+      }
+    };
+
+    loadTraderNames();
+  }, [pool.traderAAddress, pool.traderBAddress]);
   const poolAAmount = BigInt(pool.poolATotal || '0');
   const poolBAmount = BigInt(pool.poolBTotal || '0');
   const totalAmount = BigInt(pool.totalPoolSize || '0');
@@ -56,7 +88,7 @@ export function PoolCard({ pool, onClick }: PoolCardProps) {
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Trader A
+              {loadingNames ? 'Loading...' : traderAName}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
               {pool.traderAAddress ? `${pool.traderAAddress.slice(0, 8)}...${pool.traderAAddress.slice(-6)}` : 'N/A'}
@@ -75,7 +107,7 @@ export function PoolCard({ pool, onClick }: PoolCardProps) {
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Trader B
+              {loadingNames ? 'Loading...' : traderBName}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
               {pool.traderBAddress ? `${pool.traderBAddress.slice(0, 8)}...${pool.traderBAddress.slice(-6)}` : 'N/A'}

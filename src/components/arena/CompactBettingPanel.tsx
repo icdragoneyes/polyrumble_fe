@@ -52,6 +52,12 @@ export function CompactBettingPanel({
 
   const bettingAllowed = isBettingAllowed(pool);
 
+  // Truncate trader names for buttons
+  const truncateTraderName = (name: string, maxLength: number = 6): string => {
+    if (name.length <= maxLength) return name;
+    return name.substring(0, maxLength) + '...';
+  };
+
   useEffect(() => {
     if (!betAmount || !connected) {
       setValidationError(null);
@@ -211,22 +217,22 @@ export function CompactBettingPanel({
         {/* Desktop: New Layout */}
         <div className="hidden lg:block space-y-3">
           {/* Trader A - Summary + Button */}
-          <div className="flex items-center gap-2">
+          <div className={`flex items-center gap-2 transition-all duration-300 ${selectedPool === 'A' ? 'scale-110' : selectedPool === 'B' ? 'scale-90 opacity-50' : ''}`}>
             <div className="flex-1 flex items-center gap-2 p-2 rounded-lg border-2 border-blue-200 bg-blue-50">
               {traderAImage && (
-                <img src={traderAImage} alt={traderAName} className="w-8 h-8 rounded-full" />
+                <img src={traderAImage} alt={traderAName} className={`rounded-full transition-all duration-300 ${selectedPool === 'A' ? 'w-12 h-12' : 'w-7 h-7'}`} />
               )}
               <div className="flex-1 min-w-0">
-                <div className="text-xs font-bold text-blue-600 truncate">{traderAName}</div>
+                <div className={`font-bold text-blue-600 truncate transition-all duration-300 ${selectedPool === 'A' ? 'text-base' : 'text-[11px]'}`}>{traderAName}</div>
                 {traderAData && (
-                  <div className="text-[10px] text-gray-600">
+                  <div className={`text-gray-600 transition-all duration-300 ${selectedPool === 'A' ? 'text-xs' : 'text-[9px]'}`}>
                     ${(traderAData.metrics.portfolioValue / 1000).toFixed(1)}k • {' '}
                     <span className={traderAData.metrics.totalPnl > 0 ? 'text-green-600' : 'text-red-600'}>
                       ${(traderAData.metrics.totalPnl / 1000).toFixed(1)}k
                     </span>
                   </div>
                 )}
-                <div className="text-[10px] text-gray-600">
+                <div className={`text-gray-600 transition-all duration-300 ${selectedPool === 'A' ? 'text-xs' : 'text-[9px]'}`}>
                   {formatSOL(poolASizeSOL)} SOL • {poolAPercent.toFixed(0)}% • {pool.currentOddsA?.toFixed(2)}x
                 </div>
               </div>
@@ -234,33 +240,34 @@ export function CompactBettingPanel({
             <button
               onClick={() => connected && bettingAllowed && handlePoolSelection('A')}
               disabled={!connected || !bettingAllowed}
-              className={`px-4 py-2 rounded-lg font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`px-4 py-2 rounded-lg font-bold text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap ${
                 selectedPool === 'A'
-                  ? 'bg-blue-600 text-white shadow-md'
+                  ? 'bg-blue-600 text-white shadow-lg scale-105'
                   : 'bg-blue-500 text-white hover:bg-blue-600'
               }`}
+              title={`Bet ${traderAName}`}
             >
-              Bet A
+              Bet {truncateTraderName(traderAName)}
             </button>
           </div>
 
           {/* Trader B - Summary + Button */}
-          <div className="flex items-center gap-2">
+          <div className={`flex items-center gap-2 transition-all duration-300 ${selectedPool === 'B' ? 'scale-110' : selectedPool === 'A' ? 'scale-90 opacity-50' : ''}`}>
             <div className="flex-1 flex items-center gap-2 p-2 rounded-lg border-2 border-orange-200 bg-orange-50">
               {traderBImage && (
-                <img src={traderBImage} alt={traderBName} className="w-8 h-8 rounded-full" />
+                <img src={traderBImage} alt={traderBName} className={`rounded-full transition-all duration-300 ${selectedPool === 'B' ? 'w-12 h-12' : 'w-7 h-7'}`} />
               )}
               <div className="flex-1 min-w-0">
-                <div className="text-xs font-bold text-orange-600 truncate">{traderBName}</div>
+                <div className={`font-bold text-orange-600 truncate transition-all duration-300 ${selectedPool === 'B' ? 'text-base' : 'text-[11px]'}`}>{traderBName}</div>
                 {traderBData && (
-                  <div className="text-[10px] text-gray-600">
+                  <div className={`text-gray-600 transition-all duration-300 ${selectedPool === 'B' ? 'text-xs' : 'text-[9px]'}`}>
                     ${(traderBData.metrics.portfolioValue / 1000).toFixed(1)}k • {' '}
                     <span className={traderBData.metrics.totalPnl > 0 ? 'text-green-600' : 'text-red-600'}>
                       ${(traderBData.metrics.totalPnl / 1000).toFixed(1)}k
                     </span>
                   </div>
                 )}
-                <div className="text-[10px] text-gray-600">
+                <div className={`text-gray-600 transition-all duration-300 ${selectedPool === 'B' ? 'text-xs' : 'text-[9px]'}`}>
                   {formatSOL(poolBSizeSOL)} SOL • {poolBPercent.toFixed(0)}% • {pool.currentOddsB?.toFixed(2)}x
                 </div>
               </div>
@@ -268,13 +275,14 @@ export function CompactBettingPanel({
             <button
               onClick={() => connected && bettingAllowed && handlePoolSelection('B')}
               disabled={!connected || !bettingAllowed}
-              className={`px-4 py-2 rounded-lg font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`px-4 py-2 rounded-lg font-bold text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap ${
                 selectedPool === 'B'
-                  ? 'bg-orange-600 text-white shadow-md'
+                  ? 'bg-orange-600 text-white shadow-lg scale-105'
                   : 'bg-orange-500 text-white hover:bg-orange-600'
               }`}
+              title={`Bet ${traderBName}`}
             >
-              Bet B
+              Bet {truncateTraderName(traderBName)}
             </button>
           </div>
 
@@ -293,7 +301,7 @@ export function CompactBettingPanel({
               {/* Bet Amount Input */}
               <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1">
-                  Bet amount for {selectedPool ? `Trader ${selectedPool}` : '...'}
+                  Bet amount for {selectedPool ? (selectedPool === 'A' ? traderAName : traderBName) : '...'}
                 </label>
                 <input
                   type="number"

@@ -42,7 +42,7 @@ export function PNLTabContent({
   }, [trader1Data, trader2Data]);
 
   return (
-    <div className="p-4">
+    <div className="p-1">
       <Chart
         data={chartData}
         trader1Name={trader1Name}

@@ -33,21 +33,17 @@ export function StickyBottomPanel({
       </div>
 
       {/* Content Area */}
-      <div className="container mx-auto px-4 max-w-7xl py-3">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* Tab Content - 2/3 on desktop, full on mobile */}
-          <div className={`lg:col-span-2 ${
-            activeTab === 'pnl'
-              ? 'h-[70vh] overflow-hidden'
-              : 'max-h-[70vh] overflow-y-auto custom-scrollbar'
-          }`}>
+      <div className="container mx-auto px-2 max-w-7xl py-1">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+          {/* Tab Content - 2/3 on desktop, full on mobile - Fixed height for all tabs */}
+          <div className="lg:col-span-2 h-[75vh] overflow-hidden">
             {activeTab === 'pnl' && pnlContent}
-            {activeTab === 'metrics' && metricsContent}
-            {activeTab === 'positions' && positionsContent}
+            {activeTab === 'metrics' && <div className="h-full overflow-y-auto custom-scrollbar">{metricsContent}</div>}
+            {activeTab === 'positions' && <div className="h-full overflow-y-auto custom-scrollbar">{positionsContent}</div>}
           </div>
 
           {/* Desktop: Betting Panel Sidebar - Hidden on mobile */}
-          <div className="hidden lg:block lg:col-span-1 border-l-4 border-black pl-4">
+          <div className="hidden lg:block lg:col-span-1 border-l-4 border-black pl-3">
             {poolInfoSection}
           </div>
         </div>

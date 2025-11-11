@@ -57,7 +57,7 @@ export function MetricsTabContent({
 
   return (
     <div className="p-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
         {/* Trader 1 Column */}
         <div className="space-y-3">
           <div className="flex items-center gap-3 mb-4 pb-3 border-b-2 border-blue-600">

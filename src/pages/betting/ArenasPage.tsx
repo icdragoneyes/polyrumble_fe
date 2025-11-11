@@ -6,6 +6,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { FiArrowLeft } from 'react-icons/fi';
 import { api } from '../../services/api';
 import { PoolCard } from '../../components/betting/PoolCard';
 import { useWebSocket } from '../../hooks/useWebSocket';
@@ -147,8 +148,9 @@ export default function ArenasPage() {
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
             <div>
-              <Link to="/" className="text-blue-600 hover:text-blue-700 mb-2 inline-block body-font">
-                ← Back to Home
+              <Link to="/" className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 body-font text-sm mb-2">
+                <FiArrowLeft className="w-4 h-4" />
+                <span>Back</span>
               </Link>
               <h1 className="text-4xl md:text-5xl font-bold comic-font mb-2">
                 💥 Betting Arenas

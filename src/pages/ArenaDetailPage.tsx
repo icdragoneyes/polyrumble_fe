@@ -216,9 +216,10 @@ export default function ArenaDetailPage() {
       )}
 
       <main className="container mx-auto px-4 py-2 max-w-7xl">
-        {/* Compact Header */}
-        <div className="flex items-center justify-between gap-3 mb-2">
-          <div className="flex items-center gap-3">
+        {/* Compact Header - Grid Layout */}
+        <div className="mb-2">
+          {/* Back Link Row */}
+          <div className="mb-1">
             <Link
               to="/arenas"
               className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 body-font text-sm"
@@ -226,34 +227,14 @@ export default function ArenaDetailPage() {
               <FiArrowLeft className="w-4 h-4" />
               <span className="hidden sm:inline">Back</span>
             </Link>
-
-            <h1 className="text-lg md:text-xl font-bold comic-font leading-tight">
-              {traderAName} vs {traderBName}
-            </h1>
           </div>
 
-          {/* Status and Share */}
-          <div className="flex items-center gap-2">
-            <span className={`px-2 py-1 rounded-full font-bold border text-xs ${
-              pool.status === 'active'
-                ? 'border-green-600 bg-green-100 text-green-800'
-                : pool.status === 'locked'
-                ? 'border-yellow-600 bg-yellow-100 text-yellow-800'
-                : pool.status === 'settled'
-                ? 'border-gray-600 bg-gray-100 text-gray-800'
-                : 'border-red-600 bg-red-100 text-red-800'
-            }`}>
-              {pool.status === 'active' ? '🟢 Active' : pool.status === 'locked' ? '⏳ Locked' : pool.status === 'settled' ? '✅ Settled' : '❌ Cancelled'}
-            </span>
-            <span className="text-gray-600 text-xs">#{pool.poolNumber}</span>
-            <span className="text-gray-600 text-xs">•</span>
-            <span className="text-gray-600 text-xs">{pool.timeframeDays}d</span>
-            <span className="text-gray-600 text-xs">•</span>
-            <span className="font-bold text-gray-900 text-sm">
-              {((Number(pool.totalPoolSize) || 0) / 1_000_000_000).toFixed(2)} SOL
-            </span>
-
-            <div className="flex items-center gap-1 ml-2">
+          {/* Title Row */}
+          <div className="flex items-center justify-between mb-1">
+            <h1 className="text-xl md:text-2xl font-bold comic-font leading-tight">
+              {traderAName} vs {traderBName}
+            </h1>
+            <div className="flex items-center gap-1">
               <button
                 onClick={handleCopyLink}
                 className="p-1.5 hover:bg-gray-100 rounded transition-colors"
@@ -271,6 +252,28 @@ export default function ArenaDetailPage() {
               </button>
               <div className={`w-2 h-2 rounded-full ml-1 ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
             </div>
+          </div>
+
+          {/* Status Row */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className={`px-2 py-1 rounded-full font-bold border text-sm ${
+              pool.status === 'active'
+                ? 'border-green-600 bg-green-100 text-green-800'
+                : pool.status === 'locked'
+                ? 'border-yellow-600 bg-yellow-100 text-yellow-800'
+                : pool.status === 'settled'
+                ? 'border-gray-600 bg-gray-100 text-gray-800'
+                : 'border-red-600 bg-red-100 text-red-800'
+            }`}>
+              {pool.status === 'active' ? '🟢 Active' : pool.status === 'locked' ? '⏳ Locked' : pool.status === 'settled' ? '✅ Settled' : '❌ Cancelled'}
+            </span>
+            <span className="text-gray-600 text-sm">Pool #{pool.poolNumber}</span>
+            <span className="text-gray-600 text-sm">•</span>
+            <span className="text-gray-600 text-sm">{pool.timeframeDays} days</span>
+            <span className="text-gray-600 text-sm">•</span>
+            <span className="font-bold text-gray-900 text-base">
+              {((Number(pool.totalPoolSize) || 0) / 1_000_000_000).toFixed(2)} SOL
+            </span>
           </div>
         </div>
 
