@@ -1,15 +1,31 @@
 import { createBrowserRouter } from 'react-router-dom';
-import HomePage from '../pages/betting/HomePage';
+import LandingPage from '../pages/LandingPage';
+import ArenasPage from '../pages/betting/ArenasPage';
+import ArenaDetailPage from '../pages/ArenaDetailPage';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import LoginPage from '../pages/admin/LoginPage';
 
 /**
  * Application router configuration
+ *
+ * Routes:
+ * / - Landing page with hero and CTAs
+ * /arenas - List of active betting pools/arenas
+ * /arena/:id - Detailed arena view (trader comparison + betting interface)
+ * /admin/* - Admin dashboard for creating and managing arenas
  */
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <HomePage />,
+    element: <LandingPage />,
+  },
+  {
+    path: '/arenas',
+    element: <ArenasPage />,
+  },
+  {
+    path: '/arena/:id',
+    element: <ArenaDetailPage />,
   },
   {
     path: '/admin',
@@ -31,10 +47,16 @@ export const router = createBrowserRouter([
   {
     path: '*',
     element: (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">404</h1>
-          <p className="text-gray-600 dark:text-gray-400">Page not found</p>
+          <h1 className="text-6xl font-bold mb-4 comic-font">404</h1>
+          <p className="text-gray-600 dark:text-gray-400 text-xl mb-6">Page not found</p>
+          <a
+            href="/"
+            className="comic-button bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 inline-block"
+          >
+            Go Home
+          </a>
         </div>
       </div>
     ),

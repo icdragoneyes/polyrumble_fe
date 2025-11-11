@@ -1,0 +1,404 @@
+/* Comic Book Theme - Design Tokens & Utilities */
+
+:root {
+  /* Primary Colors */
+  --color-trader1: #2B7FDB;
+  --color-trader2-start: #FFB800;
+  --color-trader2-end: #FF8C00;
+  --color-background: #FFFEF5;
+  --color-accent-red: #FF6B6B;
+  --color-accent-teal: #4ECDC4;
+
+  /* Supporting Colors */
+  --color-black: #1A1A1A;
+  --color-shadow: #D4C5B9;
+
+  /* Status Colors */
+  --color-positive: #10B981;
+  --color-negative: #EF4444;
+  --color-neutral: #6B7280;
+
+  /* Fonts */
+  --font-comic: 'Bangers', 'Comic Sans MS', cursive;
+  --font-body: 'Roboto', sans-serif;
+  --font-mono: 'Courier New', monospace;
+
+  /* Spacing Scale */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* Border Radius Scale */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* Border Width Scale */
+  --border-thin: 2px;
+  --border-normal: 3px;
+  --border-thick: 4px;
+  --border-accent: 6px;
+
+  /* Shadow Scale */
+  --shadow-sm: 2px 2px 0px var(--color-black);
+  --shadow-md: 4px 4px 0px var(--color-black);
+  --shadow-lg: 6px 6px 0px var(--color-black);
+  --shadow-xl: 8px 8px 0px var(--color-black);
+}
+
+/* Base Styles */
+body {
+  background-color: var(--color-background);
+  font-family: var(--font-body);
+}
+
+/* Comic Font Utility */
+.comic-font {
+  font-family: var(--font-comic);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.body-font {
+  font-family: var(--font-body);
+}
+
+.data-font {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Comic Shadow Effect */
+.comic-shadow {
+  box-shadow: var(--shadow-md);
+  transition: box-shadow 200ms ease, transform 200ms ease;
+}
+
+.comic-shadow:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.comic-shadow:active {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(2px);
+}
+
+.comic-shadow-lg {
+  box-shadow: var(--shadow-lg);
+}
+
+.comic-shadow-xl {
+  box-shadow: var(--shadow-xl);
+}
+
+/* Bold Comic Outline */
+.comic-outline {
+  border: var(--border-normal) solid var(--color-black);
+  border-radius: var(--radius-md);
+}
+
+.comic-outline-thick {
+  border: var(--border-thick) solid var(--color-black);
+}
+
+.comic-outline-thin {
+  border: var(--border-thin) solid var(--color-black);
+}
+
+/* Halftone Pattern Background */
+.halftone-bg {
+  position: relative;
+}
+
+.halftone-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(circle, #000 1px, transparent 1px);
+  background-size: 10px 10px;
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.halftone-bg-trader1::before {
+  background-image: radial-gradient(circle, var(--color-trader1) 1px, transparent 1px);
+  opacity: 0.08;
+}
+
+.halftone-bg-trader2::before {
+  background-image: radial-gradient(circle, var(--color-trader2-end) 1px, transparent 1px);
+  opacity: 0.08;
+}
+
+/* Text Outline (Comic Effect) */
+.comic-text-outline {
+  text-shadow:
+    -1px -1px 0 var(--color-black),
+    1px -1px 0 var(--color-black),
+    -1px 1px 0 var(--color-black),
+    1px 1px 0 var(--color-black);
+}
+
+.comic-text-outline-thick {
+  text-shadow:
+    -2px -2px 0 var(--color-black),
+    2px -2px 0 var(--color-black),
+    -2px 2px 0 var(--color-black),
+    2px 2px 0 var(--color-black);
+}
+
+/* Gradient Backgrounds */
+.gradient-trader2 {
+  background: linear-gradient(135deg, var(--color-trader2-start) 0%, var(--color-trader2-end) 100%);
+}
+
+/* Comic Button */
+.comic-button {
+  background: linear-gradient(135deg, var(--color-trader2-start) 0%, var(--color-trader2-end) 100%);
+  border: var(--border-normal) solid var(--color-black);
+  box-shadow: var(--shadow-md);
+  color: var(--color-black);
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  transition: all 200ms ease;
+  cursor: pointer;
+  font-family: var(--font-comic);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.comic-button:hover:not(:disabled) {
+  transform: scale(1.05) translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.comic-button:active:not(:disabled) {
+  transform: scale(0.98) translateY(2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.comic-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #9CA3AF 0%, #6B7280 100%);
+}
+
+/* Comic Card */
+.comic-card {
+  background: white;
+  border: var(--border-thick) solid var(--color-black);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-lg);
+  position: relative;
+}
+
+.comic-card-trader1 {
+  border-top: var(--border-accent) solid var(--color-trader1);
+}
+
+.comic-card-trader2 {
+  border-top: var(--border-accent) solid var(--color-trader2-end);
+}
+
+/* Burst Animations */
+@keyframes burst-appear {
+  0% {
+    transform: scale(0) rotate(-10deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1) rotate(5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.burst-animation {
+  animation: burst-appear 300ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes burst-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.burst-pulse {
+  animation: burst-pulse 2s ease-in-out infinite;
+}
+
+/* Slide In Animations */
+@keyframes slide-in-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.slide-in-up {
+  animation: slide-in-up 400ms ease-out;
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.slide-in-left {
+  animation: slide-in-left 400ms ease-out;
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.slide-in-right {
+  animation: slide-in-right 400ms ease-out;
+}
+
+/* Shake Animation for Errors */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+.shake {
+  animation: shake 400ms ease-in-out;
+}
+
+/* Spin Animation for Loading */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Speech Bubble */
+.speech-bubble {
+  position: relative;
+  background: var(--color-background);
+  border: var(--border-normal) solid var(--color-black);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-md);
+}
+
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 15px solid var(--color-black);
+}
+
+.speech-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 12px solid var(--color-background);
+  z-index: 1;
+}
+
+/* Position Card Border Colors */
+.border-left-positive {
+  border-left: var(--border-thick) solid var(--color-positive);
+}
+
+.border-left-negative {
+  border-left: var(--border-thick) solid var(--color-negative);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+  :root {
+    --border-thin: 1.5px;
+    --border-normal: 2px;
+    --border-thick: 3px;
+    --border-accent: 4px;
+
+    --shadow-sm: 1px 1px 0px var(--color-black);
+    --shadow-md: 2px 2px 0px var(--color-black);
+    --shadow-lg: 3px 3px 0px var(--color-black);
+    --shadow-xl: 4px 4px 0px var(--color-black);
+  }
+
+  .comic-button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus States for Accessibility */
+*:focus-visible {
+  outline: 3px solid var(--color-trader1);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--color-trader1);
+  outline-offset: 2px;
+}

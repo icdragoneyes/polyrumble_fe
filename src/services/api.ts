@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { env } from '../config/env';
-import type { ApiResponse, PaginatedResponse, Pool, Bet, User, AdminStats } from '../types';
+import type { ApiResponse, PaginatedResponse, Pool, Bet, User, AdminStats, RumbleData } from '../types';
 
 /**
  * Axios instance with base configuration
@@ -110,12 +110,23 @@ export const api = {
   // Bet endpoints
   bets: {
     list: (walletAddress: string) =>
-      apiClient.get<ApiResponse<Bet[]>>(`/bets/user/${walletAddress}`),
-    get: (id: string) => apiClient.get<ApiResponse<Bet>>(`/bets/${id}`),
-    create: (data: { poolId: string; side: 'yes' | 'no'; amount: number }) =>
-      apiClient.post<ApiResponse<Bet>>('/bets', data),
+      apiClient.get<ApiResponse<Bet[]>>(`/api/v1/bets/user/${walletAddress}`),
+    get: (id: string) => apiClient.get<ApiResponse<Bet>>(`/api/v1/bets/${id}`),
+    simulate: (data: { poolId: string; amount: string; traderChoice: number }) =>
+      apiClient.post<ApiResponse<{
+        amount: string;
+        traderChoice: number;
+        currentOdds: number;
+        potentialPayout: string;
+        platformFee: string;
+        netPayout: string;
+      }>>('/api/v1/bets/simulate', data),
+    create: (data: { poolId: string; amount: string; traderChoice: number }) =>
+      apiClient.post<ApiResponse<Bet>>('/api/v1/bets', data),
     poolBets: (poolId: string) =>
-      apiClient.get<ApiResponse<Bet[]>>(`/bets/pool/${poolId}`),
+      apiClient.get<ApiResponse<Bet[]>>(`/api/v1/bets/pool/${poolId}`),
+    claim: (id: string) =>
+      apiClient.patch<ApiResponse<Bet>>(`/api/v1/bets/${id}/claim`),
   },
 
   // User endpoints
@@ -155,4 +166,28 @@ export const api = {
         apiClient.get<ApiResponse<PaginatedResponse<Bet>>>('/admin/bets', { params }),
     },
   },
+};
+
+/**
+ * Rumble/Arena API functions (from kin/phase-0)
+ * Note: These use the same backend server but different endpoint structure
+ */
+export const fetchRumble = async (id: string): Promise<RumbleData> => {
+  try {
+    const response = await apiClient.get(`/api/rumbles/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching rumble:', error);
+    throw new Error('Failed to load rumble');
+  }
+};
+
+export const listRumbles = async (): Promise<RumbleData[]> => {
+  try {
+    const response = await apiClient.get('/api/rumbles');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching rumbles:', error);
+    throw new Error('Failed to load rumbles');
+  }
 };

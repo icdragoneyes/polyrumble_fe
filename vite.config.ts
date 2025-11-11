@@ -27,6 +27,15 @@ export default defineConfig({
     port: 5173,
     strictPort: false,
     host: true,
+    proxy: {
+      // Proxy Gamma API requests to bypass CORS in development
+      "/api/gamma": {
+        target: "https://gamma-api.polymarket.com",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/gamma/, ""),
+        secure: true,
+      },
+    },
   },
 
   build: {

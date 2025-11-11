@@ -1,0 +1,268 @@
+# Polyrumble
+
+**Domain:** polyrumble.com  
+**Status:** Phase 0 (Rumble Creation via Telegram) Complete ✅
+
+Side-by-side Polymarket trader comparison → Public rumbles → Betting platform (Phase 1)
+
+---
+
+## 🚀 Quick Start
+
+### View Live Site
+```
+Frontend: http://157.180.68.185/ (will move to polyrumble.com)
+Backend API: http://157.180.68.185/api/rumbles
+```
+
+### Local Development
+
+```bash
+# Frontend
+npm install
+npm run dev
+# Runs on http://localhost:5173
+
+# Backend (in separate terminal)
+cd backend
+npm install
+npm run dev
+# Runs on http://localhost:3000
+```
+
+---
+
+## 📊 Current Status
+
+### ✅ Deployed & Working
+- **Backend API** - Complete REST API with PostgreSQL
+- **Database** - PostgreSQL 15 with daily backups
+- **Frontend** - MVP comparison tool deployed
+- **Auto-Deploy** - GitHub webhook on push
+- **Infrastructure** - Hetzner VPS with PM2 + Nginx
+
+### ⏳ In Progress (Phase 0)
+- Wallet connection (Solana/Phantom)
+- Arena creation UI
+- Arena listing page
+- React Router setup
+
+---
+
+## 📚 Documentation
+
+### Essential Docs (Read These First)
+1. **[POLYARENA_SPEC.md](./POLYARENA_SPEC.md)** ⭐ - Complete specification (Phase 0-2)
+2. **[DEPLOYMENT_SUCCESS.md](./DEPLOYMENT_SUCCESS.md)** - Deployment status & testing
+3. **[SESSION_PROGRESS_2025-01-25.md](./SESSION_PROGRESS_2025-01-25.md)** - Latest session notes
+
+### Reference Docs
+- **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Deployment procedures
+- **[backend/README.md](./backend/README.md)** - Backend API documentation
+- **[CLAUDE.md](./CLAUDE.md)** - AI development instructions
+- **[docs/deployment/](./docs/deployment/)** - Server setup logs
+- **[docs/archive/](./docs/archive/)** - Historical documentation
+
+---
+
+## 🏗️ Tech Stack
+
+### Frontend
+- React 18.3.1 + TypeScript 5.2
+- Vite 5.0.8 (build tool)
+- Tailwind CSS 3.4.0
+- Recharts 2.10.3 (charts)
+- React Icons 5.0.1
+- **Adding:** Solana wallet adapter, React Router, Zustand
+
+### Backend (NEW in Phase 0)
+- Node.js 22 + Express + TypeScript
+- PostgreSQL 15.14
+- Zod validation
+- PM2 process manager
+- Nginx reverse proxy
+
+### Infrastructure
+- **Server:** Hetzner VPS (157.180.68.185)
+- **Database:** PostgreSQL with SSL + daily backups
+- **Deployment:** GitHub webhook auto-deploy
+- **Process Management:** PM2
+- **Web Server:** Nginx
+
+---
+
+## 📋 Roadmap
+
+### Phase 0: Arena Creation (THIS WEEK - 40% Complete ✅)
+
+**Completed:**
+- ✅ Backend API with 6 endpoints
+- ✅ PostgreSQL database + schema
+- ✅ Deployed to production
+- ✅ Auto-deployment pipeline
+- ✅ Documentation complete
+
+**Remaining:**
+- ⏳ Wallet connection (Phantom)
+- ⏳ Arena creation UI
+- ⏳ Arena listing page (/arenas)
+- ⏳ Arena detail page (/arena/:id)
+- ⏳ React Router setup
+
+### Phase 1: Betting (8-12 weeks)
+- SOL betting functionality
+- 6-hour grace period
+- Settlement system
+- Smart contracts (Solana + Anchor)
+
+### Phase 2: Diamond Hands (6-8 weeks)
+- Exit penalties
+- Diamond bonus pools
+- Advanced game theory
+
+---
+
+## 🔧 Development
+
+### Project Structure
+
+```
+polyarena/
+├── src/                    # Frontend (React)
+│   ├── components/
+│   ├── hooks/
+│   ├── services/
+│   └── ...
+├── backend/                # Backend API (NEW)
+│   ├── src/
+│   │   ├── routes/
+│   │   ├── controllers/
+│   │   ├── services/
+│   │   └── ...
+│   └── README.md
+├── docs/
+│   ├── deployment/         # Server setup logs
+│   └── archive/           # Historical docs
+├── POLYARENA_SPEC.md      # Main specification ⭐
+├── DEPLOYMENT_SUCCESS.md  # Deployment report
+└── README.md              # This file
+```
+
+### API Endpoints (Phase 0)
+
+```
+GET    /health                      - Health check
+GET    /api/arenas                  - List arenas
+POST   /api/arenas                  - Create arena
+GET    /api/arenas/:id              - Get arena details
+PATCH  /api/arenas/:id              - Update arena
+DELETE /api/arenas/:id              - Delete arena
+GET    /api/arenas/creator/:wallet  - Get creator's arenas
+```
+
+### Environment Variables
+
+**Backend** (`backend/.env`):
+```env
+DATABASE_URL=postgresql://...
+PORT=3001
+NODE_ENV=production
+ALLOWED_ORIGINS=http://157.180.68.185,http://localhost:5173
+```
+
+**Frontend** (`.env.production`):
+```env
+VITE_API_URL=http://157.180.68.185
+```
+
+---
+
+## 🚢 Deployment
+
+### Server Access
+```bash
+ssh root@157.180.68.185
+```
+
+### PM2 Commands
+```bash
+pm2 status                    # View all processes
+pm2 logs polyarena-api        # Backend logs
+pm2 logs polyarena-webhook    # Webhook logs
+pm2 restart polyarena-api     # Restart backend
+```
+
+### Manual Deployment
+
+**Frontend:**
+```bash
+cd /var/www/polyarena
+bash deploy-frontend.sh
+```
+
+**Backend:**
+```bash
+cd /var/www/polyarena-api/backend
+git pull && npm install && npm run build
+pm2 restart polyarena-api
+```
+
+### Auto-Deployment
+Webhook triggers on push to `phase-0-arena-creation` branch:
+- Frontend: Auto-builds and deploys
+- Backend: Manual restart required after pull
+
+---
+
+## 🧪 Testing
+
+### Test Backend
+```bash
+curl http://157.180.68.185/health
+curl http://157.180.68.185/api/arenas
+```
+
+### Test Frontend
+Open in browser: http://157.180.68.185/
+
+### Create Test Arena
+```bash
+curl -X POST http://157.180.68.185/api/arenas \
+  -H "Content-Type: application/json" \
+  -d '{
+    "creatorWallet": "0x8e900d70d4787dbcaba6bae195c8e0f8b98d63b2",
+    "traderAAddress": "0x1234567890123456789012345678901234567890",
+    "traderAName": "Test Trader A",
+    "traderBAddress": "0x0987654321098765432109876543210987654321",
+    "traderBName": "Test Trader B",
+    "timeframe": 7
+  }'
+```
+
+---
+
+## 🔗 Links
+
+- **Live Site:** http://157.180.68.185/
+- **GitHub:** https://github.com/talkinandy/polyarena
+- **Branch:** phase-0-arena-creation
+- **Production Backup:** Tag `mvp-v1.0` on main branch
+
+---
+
+## 📝 License
+
+MIT
+
+---
+
+## 🤝 Contributing
+
+This is a personal project in active development. Currently in Phase 0 (Arena Creation).
+
+**Next Session:** Add wallet connection + arena creation UI (Day 3-4)
+
+---
+
+**Last Updated:** 2025-01-25  
+**Session Progress:** [SESSION_PROGRESS_2025-01-25.md](./SESSION_PROGRESS_2025-01-25.md)

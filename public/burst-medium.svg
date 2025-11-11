@@ -1,0 +1,10 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Medium comic burst explosion -->
+  <path d="M32 4L35 23L50 16L40 30L58 32L42 38L52 52L38 44L32 62L26 44L12 52L22 38L6 32L24 30L14 16L29 23L32 4Z" fill="currentColor" stroke="#1A1A1A" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Inner halftone dots -->
+  <circle cx="32" cy="32" r="2" fill="#1A1A1A" opacity="0.3"/>
+  <circle cx="38" cy="28" r="1.5" fill="#1A1A1A" opacity="0.3"/>
+  <circle cx="26" cy="28" r="1.5" fill="#1A1A1A" opacity="0.3"/>
+  <circle cx="38" cy="36" r="1.5" fill="#1A1A1A" opacity="0.3"/>
+  <circle cx="26" cy="36" r="1.5" fill="#1A1A1A" opacity="0.3"/>
+</svg>
